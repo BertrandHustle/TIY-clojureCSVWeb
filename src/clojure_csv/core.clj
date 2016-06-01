@@ -1,10 +1,10 @@
 (ns clojure-csv.core
-  (:require [clojure.string :as str])
-  (:require [clojure.walk :as keywordify]))
+  (:require [clojure.string :as str]))
+
 
 
 (defn -main []
-  (println "Enter a country name:")
+  (println "Enter a category:")
   ;slurp reads files
   (let [purchases (slurp "purchases.csv")
         ;splits by line
@@ -19,15 +19,19 @@
         ;creates hashmap from purchases on headers
         purchases (map (fn [purchase](zipmap headers purchase))purchases)
 
+        ;turns key strings into keys
         purchases (clojure.walk/keywordize-keys purchases)
+
         ;user input
         category (read-line)
         ;gets purchases by category
-        purchases (filter (fn [purchase](= (get purchase "category") category))purchases)
+        purchases (filter (fn [purchase](= (get purchase :category) category)) purchases)
         ;prints out result
         file-text (pr-str purchases)]
     ;write to file by category name
-    (spit (str category ".edn") file-text)))
+    (spit (str "filtered_purchases.edn") file-text)
+    (println purchases)))
+
 
 
 
