@@ -9,7 +9,7 @@
 (defonce server (atom nil))
 
 (defn gen-purchase []
-  (println "Enter a category:")
+  ;(println "Enter a category:")
   ;slurp reads files
   (let [purchases (slurp "purchases.csv")
         ;splits by line
@@ -23,24 +23,20 @@
         purchases (rest purchases)
         ;creates hashmap from purchases on headers
         purchases (map (fn [purchase](zipmap headers purchase))purchases)
-
         ;turns key strings into keys
-        purchases (clojure.walk/keywordize-keys purchases)]))
+        purchases (clojure.walk/keywordize-keys purchases)]purchases))
 
-        ;user input
-        ;category (read-line)
-        ;gets purchases by category
-        ;purchases (filter (fn [purchase](= (get purchase :category) category)) purchases)]))
-        ;prints out result
-        ;file-text (pr-str purchases)]
-    ;write to file by category name
-    ;(spit (str "filtered_purchases.edn") file-text)
-    ;(println purchases)))
 
 ;filters purchases based on category and builds html
 (defn purchase-html [category]
-  (let [purchases (gen-purchase) purchases (if (= 0 (count category))
-        purchases (filter (fn [purchase] (= (get purchase :category)category))purchases))]))
+  (let [purchases (gen-purchase)
+        purchases (if (= 0 (count category))
+        purchases (filter (fn [purchase] (= (get purchase :category )category))purchases))]
+        [:ol (map (fn [purchase] [:li (str (get purchase :customer_id)) " "
+                                      (str (get purchase :date)) " "
+                                      (str (get purchase :credit_card)) " "
+                                      (str (get purchase :cvv))  " "
+                                      (str (get purchase :category)) ])purchases)]))
 
 
 (comp/defroutes webroot
@@ -49,11 +45,11 @@
 
                           ;this calls html forms, :html denotes a tag
                           (hic/html [:html [:body
-                                    [:a {:href "Furniture "} :Furniture]
-                                    [:a {:href "Alcohol "} :Alcohol]
-                                    [:a {:href "Toiletries "} :Toiletries]
-                                    [:a {:href "Shoes "} :Shoes]
-                                    [:a {:href "Food "} :Food]
+                                    [:a {:href "Furniture "} :Furniture] [:br]
+                                    [:a {:href "Alcohol "} :Alcohol] [:br]
+                                    [:a {:href "Toiletries "} :Toiletries] [:br]
+                                    [:a {:href "Shoes "} :Shoes] [:br]
+                                    [:a {:href "Food "} :Food] [:br]
                                     [:a {:href "Jewelry "} :Jewelry]
                                             (purchase-html category)]])))
 
